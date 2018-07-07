@@ -41,3 +41,16 @@ Predicted attribute: class of iris plant.
     petal width: 0.1  2.5   1.20  0.76    0.9565  (high!)
 
    Class Distribution: 33.3% for each of 3 classes.
+
+## Challenges
+Deadline: 8/7/2018
+In Depth explanation on each step reffering why steps and model had been taken in Jupyter Notebook
+1. EDA
+2. Hypothesis Test
+3. Linear Regression *
+4. Classification *
+5. Kmeans *
+3. Decisions
+6. Graphical Visualization or representation
+
+Challenge Credit: Sabbir vai
