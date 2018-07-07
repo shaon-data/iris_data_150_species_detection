@@ -14,7 +14,6 @@ For downloading use
 | Date Donated | 1988-07-01 |
 | Associated Tasks | Classification |
 | Missing Values? | No |
-| Number of Web Hits | 1980441 |
 
 
 
