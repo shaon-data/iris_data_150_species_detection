@@ -17,17 +17,16 @@ data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ["sepal_width", 
 ## replacing with outliers in not available values
 data.fillna(-99999, inplace=True)
 
-
-
-## taking the first 4 sample by default
-## print(data.head())
-## taking the 4 random sample
-## print(data.sample(4))
-
-
-
-## taking the missing data
+## Taking the missing data
+data.reset_index(inplace=True)
 print("Showing the missing data")
-print(data.isna())
+'''
+    isnull converting to null T/F matrix, then if any element is null,
+    it is true, then pick it to our new data matrix and print them.
+'''
+print(data[data.isnull().any(axis=1)==True])
+## resetting back the index as first column
+data.set_index('sepal_width',inplace=True)
 ## if everything is right procced
 
+print(data.head())
