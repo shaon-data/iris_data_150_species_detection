@@ -45,6 +45,7 @@ Predicted attribute: class of iris plant.
 
 ## Challenges
 Deadline: 8/7/2018
+
 In Depth explanation on each step reffering why steps and model had been taken in Jupyter Notebook
 1. EDA
 2. Hypothesis Test
