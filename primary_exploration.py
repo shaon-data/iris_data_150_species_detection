@@ -25,12 +25,27 @@ FILE_NAME = "res/iris.csv"
 
 ## loading the data
 data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ["sepal_width", "sepal_length", "petal_width", "petal_length", "class"] )
+data.reset_index(inplace=True)
+
+N,M = data.shape
+
+'''
+## Creating Missing data virtually
+import random
+for c in range(6):
+    row_index = random.randint(0, N-1)
+    row_cell = random.randint(0, M-1)
+    print(data.iloc[row_index][row_cell])
+    data.iloc[row_index][row_cell] = np.nan
+
+    print(data.iloc[row_index][row_cell])
+'''
+
 
 ## dealing with missing data
 ## replacing with outliers in not available values
 data.fillna(-99999, inplace=True)
 
-data.reset_index(inplace=True)
 
 ## converting label to number
 data.loc[ data['class']=='Iris-setosa', 'class'] = 1
@@ -75,13 +90,31 @@ def dist_fit_test(df,label):
 for c in features:
     dist_fit_test(features[c],c)
 '''
+accur = []
+pred = []
+for c in range(20):
+    ## loading the data
+    data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ["sepal_width", "sepal_length", "petal_width", "petal_length", "class"] )
 
+    ## dealing with missing data
+    ## replacing with outliers in not available values
+    ## data.fillna(-99999, inplace=True) ## We wanted to penalize bigger where missing data available but it destroys our model inacurately
+    data.fillna(0, inplace=True)
+
+    data.reset_index(inplace=True)
+
+    ## converting label to number
+    data.loc[ data['class']=='Iris-setosa', 'class'] = 1
+    data.loc[ data['class']=='Iris-versicolor', 'class'] = 2
+    data.loc[ data['class']=='Iris-virginica', 'class'] = 3
+    
     data = shuffle(data)
 
     #gathering sample and training set
     percent = 10
     sample_size = int(data.shape[0]*(percent/100))
     sample = data.sample(sample_size)
+    data.drop(sample.index,inplace=True)
 
     #data for prediction
     XP = np.array(sample.drop(['class'],1))
@@ -89,7 +122,6 @@ for c in features:
     yP = np.array(sample['class'])
 
     #data for training and test
-    data.drop(sample.index,inplace=True)
     X = np.array(data.drop(['class'],1))
     X = preprocessing.scale(X)
     y = np.array(data['class'])
@@ -110,4 +142,5 @@ for c in features:
     accur.append(accuracy)
     pred.append(ps)
 
-print(sum(accur)/len(accur), sum(pred)/len(pred))
+print("Avarage Accuracy %s" % (sum(accur)/len(accur)))
+print("Average Prediction Score %s"%(sum(pred)/len(pred)))
