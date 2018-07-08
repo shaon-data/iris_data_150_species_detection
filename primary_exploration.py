@@ -90,6 +90,9 @@ def dist_fit_test(df,label):
 for c in features:
     dist_fit_test(features[c],c)
 '''
+
+
+
 accur = []
 pred = []
 for c in range(20):
