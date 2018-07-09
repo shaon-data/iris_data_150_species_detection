@@ -52,12 +52,13 @@ data.reset_index(inplace=True)
 data.fillna(0, inplace=True)
 
 # Create an array of three colours, one for each species.
-colors = np.array(['red', 'green', 'blue'])
+colors = np.array(['black','red', 'green', 'blue'])
+labelss = np.array(['Missing Label','Setosa', 'Versicolor', 'Virginica'])
 
 #0,1,2 labels for selecting color by index
-data.loc[ data['Class']=='Iris-setosa', 'Class'] = 0
-data.loc[ data['Class']=='Iris-versicolor', 'Class'] = 1
-data.loc[ data['Class']=='Iris-virginica', 'Class'] = 2
+data.loc[ data['Class']=='Iris-setosa', 'Class'] = 1
+data.loc[ data['Class']=='Iris-versicolor', 'Class'] = 2
+data.loc[ data['Class']=='Iris-virginica', 'Class'] = 3
 
 data = shuffle(data)
 
@@ -74,7 +75,6 @@ print("Least Colinearity %s"%mincor)
 #12x7 unit plot
 plt.figure('Unsupervised Clustering - KMeans',figsize=(12,7))
 
-
 #nrows=1, ncols=2, plot_number=1
 plt.subplot(2, 2, 1)
 plt.scatter(x[data.columns[mincor[0]]], x[data.columns[mincor[1]]], c=colors[y], s=40)
@@ -88,19 +88,18 @@ plt.title('%s vs %s[Highest Colinear]'%(data.columns[maxcor[0]],data.columns[max
 clu = KMeans(n_clusters=3)
 clu.fit(x)
 
-print("Actual plots %s" % y.tolist())
-
-#Start with a plot figure of size 12 units wide & 3 units tall
-
-
-# Create an array of three colours, one for each species.
-colors = np.array(['red', 'green', 'blue'])
-labelss = np.array(['Setosa', 'Versicolor', 'Virginica'])
+print("For actual labels,where")
+count=0
+for c in labelss:
+    print("Label=%s -> Species = %s"%(count,c))
+    count+=1
+    
+print("Actual labels %s" % y.tolist())
 
 # The fudge to reorder the cluster ids.
 #predictedY = np.choose(clu.labels_, [1, 0, 2]).astype(np.int64)
 predictedY = clu.labels_
-print("Clustered plots %s" % predictedY)
+print("Clustered groups %s" % predictedY)
 
 # Plot the classifications that we saw earlier between Petal Length and Petal Width
 plt.subplot(2, 2, 3)
@@ -114,7 +113,7 @@ for c in range(len(colors)):
 
 # Plot the classifications according to the model
 plt.subplot(2, 2, 4)
-plt.scatter(x['petal_length'], x['petal_width'], c=colors[predictedY], s=40) #colormap
+plt.scatter(x['petal_length'], x['petal_width'], c=colors[1:][predictedY], s=40) #colormap
 plt.title("Model's predicted classes[Clusters without label]")
 
 plt.tight_layout()

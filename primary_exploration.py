@@ -11,7 +11,9 @@ import scipy.stats
 
 
 from matplotlib import style
-import matplotlib.patches as mpatches
+#import matplotlib.patches as mpatch
+from matplotlib.patches import Patch
+from matplotlib.lines import Line2D
 from sklearn import preprocessing, cross_validation, svm
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
@@ -39,8 +41,8 @@ for c in range(6):
 
     print(data.iloc[row_index][row_cell])
 '''
-labelss = np.array(['Undefined','Setosa', 'Versicolor', 'Virginica'])
-colors = np.array(['black','r','b','g'])
+labelss = np.array(['Undefined[Unbound down]','Setosa', 'Versicolor', 'Virginica','Undefined[Unbound up]'])
+colors = np.array(['black','r','b','g','y'])
 
 ## dealing with missing data
 ## replacing with outliers in not available values
@@ -151,18 +153,19 @@ for c in range(20):
 print("Avarage Accuracy %s" % (sum(accur)/len(accur)))
 print("Average Prediction Score %s"%(sum(pred)/len(pred)))
 
+plt.figure('Supervised Classification by Integer label Forcasting - Linear Regression')
 #Actual Points
 plt.scatter(data['petal_length'], data['petal_width'], c=colors[y], s=40) #colormap
 
 #Predicted Points
 plt.scatter(sample['petal_length'], sample['petal_width'], c=colors[yP], s=200,marker='x') #colormap
 
-color_patch = []
-for c in range(len(colors)):    
-    color_patch.append(mpatches.Patch(color=colors[c], label=labelss[c]))
-    plt.legend(handles=color_patch)
-
-
+color_patch = [Patch(color=colors[c], label=labelss[c]) for c in range(len(colors))]
+color_patch.append(Line2D([0], [0], marker='o', color='w', label='Points', markerfacecolor='black', markersize=15))
+color_patch.append(Line2D([0], [0], marker='X', color='w', label='Prediction', markerfacecolor='black', markersize=15))
+plt.legend(handles=color_patch, numpoints=3)
+plt.title("Determining Species of Plants from IRIS DATA")
 plt.show()
+
 
 
