@@ -21,6 +21,30 @@ style.use('ggplot')
 
 FILE_NAME = "res/iris.csv"
 
+def covarience_matrix(X):
+    #standardizing data
+    X_std = StandardScaler().fit_transform(X)
+
+    #sample means of feature columns' of dataset
+    mean_vec = np.mean(X_std, axis=0) 
+    #covariance matrix
+    cov_mat = (X_std - mean_vec).T.dot((X_std - mean_vec)) / (X_std.shape[0]-1)
+    #if right handside is ( Xstd - mean(Xstd) )^T . ( Xstd - mean(Xstd) )
+    #simplyfying X^T.X / ( n - 1 )
+    cov_mat = np.cov(X_std.T)
+    return cov_mat
+
+def max_min_bi_corel(X):
+    a = covarience_matrix(X)
+    a[a>=1] = 0
+    maxcor = np.argwhere(a.max() == a)[0] # reverse 1
+
+    b = covarience_matrix(x)
+    mincor = np.argwhere(b.min() == b)[0] # reverse 1
+
+    return maxcor,mincor
+
+
 ## loading the data
 data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ["sepal_width", "sepal_length", "petal_width", "petal_length", "Class"] )
 data.reset_index(inplace=True)
@@ -40,23 +64,31 @@ data = shuffle(data)
 x = data.iloc[:,:-1]
 y = data['Class']
 
-#12x3 unit plot
-plt.figure(figsize=(12,7))
+print("Covariance Matrix =")
+print(covarience_matrix(x))
+
+maxcor,mincor = max_min_bi_corel(x)
+print("Most Colinearity %s"%maxcor)
+print("Least Colinearity %s"%mincor)
+
+#12x7 unit plot
+plt.figure('Unsupervised Clustering - KMeans',figsize=(12,7))
+
 
 #nrows=1, ncols=2, plot_number=1
 plt.subplot(2, 2, 1)
-plt.scatter(x['sepal_length'], x['sepal_width'], c=colors[y], s=40)
-plt.title('Sepal Length vs Sepal Width')
+plt.scatter(x[data.columns[mincor[0]]], x[data.columns[mincor[1]]], c=colors[y], s=40)
+plt.title('%s vs %s[Lowest Colinear]'%(data.columns[mincor[0]],data.columns[mincor[1]]))
 
 #nrows=1, ncols=2, plot_number=2
-plt.subplot(2,2,2)
-plt.scatter(x['petal_length'], x['petal_width'], c= colors[y], s=40)
-plt.title('Petal Length vs Petal Width')
+plt.subplot(2, 2, 2)
+plt.scatter(x[data.columns[maxcor[0]]], x[data.columns[maxcor[1]]], c=colors[y], s=40)
+plt.title('%s vs %s[Highest Colinear]'%(data.columns[maxcor[0]],data.columns[maxcor[1]]))
 
 clu = KMeans(n_clusters=3)
 clu.fit(x)
 
-print("Clustered plots %s" % clu.labels_)
+print("Actual plots %s" % y.tolist())
 
 #Start with a plot figure of size 12 units wide & 3 units tall
 
@@ -74,17 +106,16 @@ print("Clustered plots %s" % predictedY)
 plt.subplot(2, 2, 3)
 plt.scatter(x['petal_length'], x['petal_width'], label = labelss[y], c=colors[y], s=40) #colormap
 plt.title('Actual Classes')
+
 color_patch = []
-for c in range(len(colors)):
-    
+for c in range(len(colors)):    
     color_patch.append(mpatches.Patch(color=colors[c], label=labelss[c]))
     plt.legend(handles=color_patch)
 
 # Plot the classifications according to the model
 plt.subplot(2, 2, 4)
 plt.scatter(x['petal_length'], x['petal_width'], c=colors[predictedY], s=40) #colormap
-plt.title("Model's predicted classes")
-
+plt.title("Model's predicted classes[Clusters without label]")
 
 plt.tight_layout()
 plt.show()

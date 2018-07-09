@@ -11,7 +11,6 @@ import scipy.stats
 
 
 from matplotlib import style
-import matplotlib.patches as mpatches
 from sklearn import preprocessing, cross_validation, svm
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
@@ -23,7 +22,7 @@ style.use('ggplot')
 FILE_NAME = "res/iris.csv"
 
 ## loading the data
-data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ["sepal_length", "sepal_width", "petal_length", "petal_width", "class"] )
+data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ["sepal_width", "sepal_length", "petal_width", "petal_length", "class"] )
 data.reset_index(inplace=True)
 
 N,M = data.shape
@@ -39,8 +38,7 @@ for c in range(6):
 
     print(data.iloc[row_index][row_cell])
 '''
-labelss = np.array(['Undefined','Setosa', 'Versicolor', 'Virginica'])
-colors = np.array(['black','r','b','g'])
+
 
 ## dealing with missing data
 ## replacing with outliers in not available values
@@ -110,7 +108,6 @@ for c in range(20):
     data.loc[ data['class']=='Iris-setosa', 'class'] = 1
     data.loc[ data['class']=='Iris-versicolor', 'class'] = 2
     data.loc[ data['class']=='Iris-virginica', 'class'] = 3
-
     
     data = shuffle(data)
 
@@ -144,25 +141,9 @@ for c in range(20):
     prediction_score = ( sum( yP==np.round( np.array(predict) ) ) / len(yP) ) * 100
     print("Prediction score %s" %prediction_score)
 
-    
+    plt.scatter(x['petal_length'], x['petal_width'], c=colors[predictedY], s=40) #colormap
     accur.append(accuracy)
     pred.append(prediction_score)
 
 print("Avarage Accuracy %s" % (sum(accur)/len(accur)))
 print("Average Prediction Score %s"%(sum(pred)/len(pred)))
-
-#Actual Points
-plt.scatter(data['petal_length'], data['petal_width'], c=colors[y], s=40) #colormap
-
-#Predicted Points
-plt.scatter(sample['petal_length'], sample['petal_width'], c=colors[yP], s=200,marker='x') #colormap
-
-color_patch = []
-for c in range(len(colors)):    
-    color_patch.append(mpatches.Patch(color=colors[c], label=labelss[c]))
-    plt.legend(handles=color_patch)
-
-
-plt.show()
-
-
