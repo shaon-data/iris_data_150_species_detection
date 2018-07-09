@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Title: Iris Dataset exploration using Linear Regressio
-
-
 """
 import numpy as np
 import pandas as pd
@@ -44,7 +42,7 @@ for c in range(6):
 
 ## dealing with missing data
 ## replacing with outliers in not available values
-data.fillna(-99999, inplace=True)
+data.fillna(0, inplace=True)
 
 
 ## converting label to number
@@ -133,17 +131,17 @@ for c in range(20):
     X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, test_size=0.2)
 
     clf = LinearRegression()
-    clf.fit(X_train, y_train) #train
+    clf.fit(X_train, y_train)
             
-    accuracy = clf.score(X_test, y_test) #test
+    accuracy = clf.score(X_test, y_test)
     print("Test Score %s" %accuracy)
 
     predict = clf.predict(XP)
     print(yP,np.round( np.array(predict)))
-    ps = ( sum( yP==np.round( np.array(predict) ) ) / len(yP) ) * 100
-    print("Prediction score %s" %ps)
+    prediction_score = ( sum( yP==np.round( np.array(predict) ) ) / len(yP) ) * 100
+    print("Prediction score %s" %prediction_score)
     accur.append(accuracy)
-    pred.append(ps)
+    pred.append(prediction_score)
 
 print("Avarage Accuracy %s" % (sum(accur)/len(accur)))
 print("Average Prediction Score %s"%(sum(pred)/len(pred)))
