@@ -79,6 +79,7 @@ def standard_error(y,y_estimate):
 
 def standard_deviation_residuals(y,y_estimated):
     ## Standard deviation of residuals or Root mean sqaure error
+    ## Lower the number is, the better the fit of the model
     n = len(y)
     return ( least_square(y,y_estimated) / (n - 1) )**(1/2)
     
