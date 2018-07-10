@@ -40,14 +40,14 @@ def r_squared(y,y_estimated,c=0):
     return rsquared
     
 def standard_deviation(x):
-    ## S
+    ## S - Average distance from the mean
     return (variance(x))**(1/2)
 
 def variance(x):
     ## S squared
-    ## Measure of -  How spread the data is
+    ## Measure of -  How spread the data is - solve the problem of outlier
     ## How spread and far your data points to each other, variance will get bigger
-    #check
+    ## by escaping or reducing the sensivitiy of outlier problem (for squaring which act like absolute value)
     x_mean = meann(x)
     xi = np.array(x)
     n = len(x) ## sample size
@@ -95,6 +95,7 @@ def standard_error(y,y_estimate):
 def standard_deviation_residuals(y,y_estimated):
     ## Standard deviation of residuals or Root mean sqaure error
     ## Lower the number is, the better the fit of the model
+    ## Average distance to the mean
     n = len(y)
     return ( least_square(y,y_estimated) / (n - 1) )**(1/2)
     
