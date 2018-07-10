@@ -51,6 +51,9 @@ def variance(x):
     x_mean = meann(x)
     xi = np.array(x)
     n = len(x) ## sample size
+    ## deviation_score_of_x = xi - x_mean
+    ## Sum of deviation scores is always = 0, so we square each individual deviation score and sum them later , like least square
+    ## least square is , sum of each square of residual sum(residuali^2) where i = [1,n] n for population, n-1 for sample
     S_squared = sum( (xi - x_mean) ** 2 ) / (n - 1)
     return S_squared
     
