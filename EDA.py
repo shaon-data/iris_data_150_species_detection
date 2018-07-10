@@ -39,6 +39,21 @@ def r_squared(y,y_estimated,c=0):
     rsquared = sum( (Distance_between_estimated_line_N_Mean)**2 ) / sum( ( y - y_mean )**2 )
     return rsquared
     
+def standard_deviation(x):
+    ## S
+    return (variance(x))**(1/2)
+
+def variance(x):
+    ## S squared
+    ## Measure of -  How spread the data is
+    ## How spread and far your data points to each other, variance will get bigger
+    #check
+    x_mean = meann(x)
+    xi = np.array(x)
+    n = len(x) ## sample size
+    S_squared = sum( (xi - x_mean) ** 2 ) / (n - 1)
+    return S_squared
+    
 def covarience_matrix(X):
     #standardizing data
     X_std = StandardScaler().fit_transform(X)
@@ -115,13 +130,10 @@ def handling_missing_data(data):
     ## Check the second parameter probability distribution, you will have the missing data should be 0/mean/median or max
     ## Not sure but practice the procedure.
 
-x=[1,2,2,3]
-y=[1,2,3,6]
-y_estimated = regression_points(x,y)
+## outliers in data make range uselsess
+x=[6,3,8,5,3]
 
-print(least_square(y,y_estimated))
-
-
+print(variance(x))
 
 
 
