@@ -22,7 +22,7 @@ from sklearn.utils import shuffle
 style.use('ggplot')
 
 
-FILE_NAME = "res/iris.csv"
+FILE_NAME = "res/iris_complete.csv"
 
 ## loading the data
 data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ["sepal_length", "sepal_width", "petal_length", "petal_width", "class"] )
