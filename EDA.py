@@ -71,11 +71,17 @@ def max_min_bi_corel(X):
 
     return maxcor,mincor
 
-def standard_error_y_estimated(y,y_estimate):
+def standard_error(y,y_estimate):
     n = len(y)
     y = np.array(y)
     y_estimated = np.array(y_estimated)
     return ( sum( (y_estimated - y)**2 ) / (n - 2) )**(1/2)
+
+def standard_deviation_residuals(y,y_estimated):
+    ## Standard deviation of residuals or Root mean sqaure error
+    n = len(y)
+    return ( least_square(y,y_estimated) / (n - 1) )**(1/2)
+    
 
 def bivariate_regression_line_coefficients(x,y):
     x_mean = meann(x)
@@ -97,6 +103,16 @@ def regression_points(x,y):
     x = np.array(x)
     y_estimated = b0 + b1*x
     return y_estimated
+
+def handling_missing_data(data):
+    ## data = dataframe
+    #data.fillna(0, inplace=True)
+    #data = data.apply(lambda x: x.fillna(x.mean()),axis=0)
+    data = data.apply(lambda x: x.fillna(x.median()),axis=0)
+
+    ## if one parameter is missing checck the another parameter with colinearity.
+    ## Check the second parameter probability distribution, you will have the missing data should be 0/mean/median or max
+    ## Not sure but practice the procedure.
 
 x=[1,2,2,3]
 y=[1,2,3,6]
