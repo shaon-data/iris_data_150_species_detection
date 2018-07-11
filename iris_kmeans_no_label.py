@@ -47,6 +47,7 @@ def max_min_bi_corel(X):
 def main():
     ## loading the data
     data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ["sepal_width", "sepal_length", "petal_width", "petal_length"] )
+    ## for unique id for labels
     data.reset_index(inplace=True)
     
 
@@ -63,6 +64,7 @@ def main():
     #data = shuffle(data)
 
     x = data
+    reference_data = data.copy()
 
     print("Covariance Matrix =")
     print(covarience_matrix(x))
@@ -71,32 +73,33 @@ def main():
     print("Most Colinearity %s"%maxcor)
     print("Least Colinearity %s"%mincor)
 
-
-    lb = pd.read_csv('res/iris_complete.csv', header=None, index_col=0, names = ["sepal_width", "sepal_length", "petal_width", "petal_length", "Class"] )
-    yyy = lb['Class'].tolist()
     
-    n_=[]
+    k_=[]
     t_=[]
     t_c=[]
-    for n in range(2,9):
-        clu = KMeans(n_clusters=n,random_state =1)
-        clu.fit(x)
+    for k  in range(2,15):
+        if (k % 2) != 0:
+            clu = KMeans(n_clusters=k,random_state =1)
+            clu.fit(x)
 
         
-
-        # The fudge to reorder the cluster ids.
-        #predictedY = np.choose(clu.labels_, [1, 0, 2]).astype(np.int64)
-        predictedY = clu.labels_
+            # The fudge to reorder the cluster ids.
+            # predictedY = np.choose(clu.labels_, [1, 0, 2]).astype(np.int64)
+            predictedY = clu.labels_
+            data['k'+str(k)+'_label'] = predictedY
+        
+        '''
         target_labels = np.unique(clu.labels_)
+        
         ula = []
         for t in target_labels:
-            #print(n,t,predictedY.tolist().count(t))
+            #print(k,t,predictedY.tolist().count(t))
             ula.append(predictedY.tolist().count(t))
             
-        n_.append(n)
+        k_.append(n)
         
         
-        
+        #sorting algorithm for sorting least distance from previous class        
         
         if n != 2:
             sula = []
@@ -118,6 +121,9 @@ def main():
         
         t_c.append(cula)
 
+        #sorting algorithm for sorting least distance from previous class
+        '''
+        
         '''
         #print("Clustered groups %s" % predictedY)
         #12x7 unit plot
@@ -146,16 +152,21 @@ def main():
 
         plt.tight_layout()
         plt.show()
-        '''
+        
 
 
-    print(n_,t_,t_c)
-    sales = {'n': n_,
+    print(k_,t_,t_c)
+    sales = {'k': k_,
          'Counts': t_c,
             }
+    
+        
     my_df = pd.DataFrame.from_dict(sales)
-    my_df.to_csv('res/n.csv')
-    print(" Sort %s" %sorted(t_c))
+    '''
+    ## start indexing from 1
+    data.index += 1 
+    data.to_csv('res/unsupervised_label.csv')
+    ### print(" Sort %s" %sorted(t_c))
 
     
     '''
