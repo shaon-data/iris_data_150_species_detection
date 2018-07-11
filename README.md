@@ -1,4 +1,4 @@
-# iris150_data_analysis 
+﻿# iris150_data_analysis 
 ## Download 
 For downloading use 
        `git clone https://github.com/ShaonMajumder/iris150_data_analysis.git` 
@@ -54,5 +54,7 @@ In Depth explanation on each step reffering why steps and model had been taken i
 5. Kmeans *
 3. Decisions
 6. Graphical Visualization or representation
+
+স্কাটার ম্যাট্রিক্স দেখে তারপর সবচেয়ে বেশি কোরিলেটেড প্যারামিটার আগে বসিয়ে লেস সিগ্নেফিকেন্ট গুলো হায়ার ডায়মেনশনে দেয়া যেতে পারে। এতে ওগুলোর অসরল রৈখিক সম্পর্ক, উচ্চ মাত্রায় সরলরৈখিক হওয়ার সম্ভবনা থাকে।
 
 Challenge Credit: Sabbir vai

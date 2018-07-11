@@ -9,7 +9,8 @@ import math
 import scipy
 import scipy.stats
 
-
+from pandas.tools.plotting import scatter_matrix
+from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import style
 import matplotlib.patches as mpatches
 from sklearn import preprocessing, cross_validation, svm
@@ -52,7 +53,8 @@ def main():
     
 
     # Create an array of three colours, one for each species.
-    colors = np.array(['red', 'green', 'blue','yellow','violet','orange','black','pink'])
+    colors = np.array(['red', 'green', 'blue','yellow','violet','orange','black','pink','purple','crimson','brown'])
+    kmarker = np.array(["v","o","*","."])
     labelss = np.array(['0', '1', '2','3','4','5','6','7','8'])
 
     
@@ -77,16 +79,68 @@ def main():
     k_=[]
     t_=[]
     t_c=[]
+    kl_n = []
+    k_inertia = []
     for k  in range(2,15):
-        if (k % 2) != 0:
+        if k%2 != 0:
             clu = KMeans(n_clusters=k,random_state =1)
             clu.fit(x)
+            predictedY = clu.labels_
+            print("k=%s , center = "%k)
 
+            # Sum of distances of samples to their closest cluster center
+            interia = clu.inertia_
+            k_inertia.append((interia)**(1/2))
+            
+            print(clu.cluster_centers_)
+            bata = data[['sepal_width','petal_length','petal_width']]
+            scatter_matrix(data, alpha=0.2, figsize=(6, 6), diagonal='kde')
+            # Plot the classifications according to the model
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection='3d')
+            
+            
+            
+            ax.scatter(x['sepal_width'][predictedY == 0],x['petal_length'][predictedY == 0], x['petal_width'][predictedY == 0],  c=x['sepal_length'][predictedY == 0],cmap=plt.hot(), label='A', marker=(5, 0, 45)) #colormap
+            ax.scatter(x['sepal_width'][predictedY == 1],x['petal_length'][predictedY == 1], x['petal_width'][predictedY == 1],  c=x['sepal_length'][predictedY == 1],cmap=plt.hot(), label='B', marker=(5, 2, 45)) #colormap
+            ax.scatter(x['sepal_width'][predictedY == 2],x['petal_length'][predictedY == 2], x['petal_width'][predictedY == 2],  c=x['sepal_length'][predictedY == 2],cmap=plt.hot(), label='C', marker=(5, 1, 45)) #colormap
+            ax.scatter(0,0,label='Color Hitmap',c='w')
+            
+            ax.set_xlabel('X axis')
+            ax.set_ylabel('Y axis')
+            ax.set_zlabel('Z axis')
+            ax.legend()
+
+            '''
+            ax.scatter(x['sepal_width'][predictedY == 0],x['petal_length'][predictedY == 0], x['petal_width'][predictedY == 0],  c='y', marker=(5, 0, 45)) #colormap
+            ax.scatter(x['sepal_width'][predictedY == 1],x['petal_length'][predictedY == 1], x['petal_width'][predictedY == 1],  c='g',cmap=plt.hot(), marker=(5, 2, 45)) #colormap
+            ax.scatter(x['sepal_width'][predictedY == 2],x['petal_length'][predictedY == 2], x['petal_width'][predictedY == 2],  c='r',cmap=plt.hot(), marker=(5, 1, 45)) #colormap
+            '''
+
+            ## taking n-dimensional centroid and plotting centroid
+            c0=[]
+            c3=[]
+            c2 = []
+
+            for c in clu.cluster_centers_:
+                ax.scatter(c[0],c[3], c[2], c='blue', marker = 'D', s=100) #colormap
+                c0.append(c[0])
+                c3.append(c[3])
+                c2.append(c[2])
+            #ax.plot(sorted(c0),sorted(c3),sorted(c2))
+            plt.title("Model's predicted classes[Clusters without label]")
+
+            plt.tight_layout()
+            plt.show()
+            
         
             # The fudge to reorder the cluster ids.
             # predictedY = np.choose(clu.labels_, [1, 0, 2]).astype(np.int64)
             predictedY = clu.labels_
-            data['k'+str(k)+'_label'] = predictedY
+            col_name = 'k'+str(k)+'_label'
+            data[col_name] = predictedY
+            k_.append(k)
+            kl_n.append(data[col_name].nunique())
         
         '''
         target_labels = np.unique(clu.labels_)
@@ -166,8 +220,36 @@ def main():
     ## start indexing from 1
     data.index += 1 
     data.to_csv('res/unsupervised_label.csv')
+    #[for c in data.columns[:4]]
+
+    data_labels = data.copy()
+    for c in data_labels.columns[:4]:
+        data_labels.drop([c],axis=1,inplace=True)
+    data_labels.to_csv('res/only_unsupervised_label.csv')
+
+    ## finding the k vs labels count
+    for c in data_labels.columns:
+        print(data_labels[c].nunique())
+
+        
     ### print(" Sort %s" %sorted(t_c))
 
+    plt.figure("k vs label")
+    plt.plot(k_,kl_n, marker = 'x')
+    plt.xlabel('k')
+    plt.ylabel('Number of labels')
+    plt.title("k vs label numbers")
+
+    plt.figure("k vs sum of distance from centroid")
+    plt.plot(k_,k_inertia, marker = 'x')
+    plt.xlabel('k')
+    plt.ylabel('sum of distance from centroid')
+    plt.title("k vs sum of distance from centroid")
+    plt.show()
+
+    ## determine and plot the k vs elbow point
+    
+    #for c in 
     
     '''
     accuracy = clf.score(X_test, y_test)
