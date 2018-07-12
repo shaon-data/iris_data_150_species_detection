@@ -70,7 +70,7 @@ def main():
     #def handle_missing_values()
     #data.fillna(0, inplace=True)
     #data = data.apply(lambda x: x.fillna(x.mean()),axis=0)
-    data = data.apply(lambda x: x.fillna(x.median()),axis=0)
+    data = data.apply(lambda x: x.fillna(x.median()),axis=0 )
 
     #data = shuffle(data)
 

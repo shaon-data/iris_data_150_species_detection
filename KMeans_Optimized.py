@@ -7,13 +7,18 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import style
+from sklearn.preprocessing import StandardScaler
+from sklearn import preprocessing, cross_validation
+from sklearn.cluster import KMeans
+
 
 
 ## Constants
-FILE_NAME = "res/iris_no_label.csv"
+Resource = "res"
+FILE_NAME = Resource+"/iris_no_label.csv"
 
 ## Settings
-style('ggplot')
+style.use('ggplot')
 
 ## Functions
 def covarience_matrix(X):
@@ -32,7 +37,7 @@ def covarience_matrix(X):
     ## max number is more corelated or less number is less corelated
     return cov_mat
 
-def max_min_bi_corel(X):
+def max_min_bi_corelation(X):
     ## Max and Min bivariate co-relation from covarience matrix
     a = covarience_matrix(X)
     ''' Converting diagonal of covariance matrix from 1 to 0.
@@ -48,5 +53,103 @@ def max_min_bi_corel(X):
     mincor = np.argwhere(b.min() == b)[0] # reverse 1
     return maxcor,mincor
 
+def main():
+    ## Loading the data
+    data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ['Sepal_Length','Sepal_Width','Petal_Length','Petal_Width'] )
+    ## for unique ID for labels in optimization
+    data.reset_index(inplace=True) # use this or remove, header = None from previous line
+    
+    ## Filling missing data with medians
+    data = data.apply(lambda x: x.fillna(x.median()), axis=0 )
+    
 
+    ## Measures without no label
+    X=data
+    ## Reference dataset for comparing or reusing
+    reference_data = data.copy()
 
+    ## Getting Highest or least co-relation from covarience matrix
+    #max_corelation_bi_measures, min_corelation_bi_measures = max_min_bi_corelation(X)
+
+    ## Optimization: experimenting with differnt K values with their model costs
+    k_s = []
+    costs = []
+    nLabels = []
+    
+    for k in range(2,15): ## experiment with n
+        if k % 2 != 0:
+            ## Initializing model with a fixed random seed
+            clusters = KMeans(n_clusters=k, random_state = 1)
+            clusters.fit(X)
+            ## Getting predicted Labels
+            predictedLabelY = clusters.labels_
+
+            ## Getting Model cost/inertia/sum of squared distance of data points from centroid
+            cost = clusters.inertia_
+            
+            ## Genarating col name of K value for predicted labels
+            col_name = 'k'+str(k)+'_label'
+            ## Saving predicting labels
+            
+            data[col_name] = predictedLabelY
+            ## Number of labels for specific K value
+
+            ## Saving k value in every session
+            k_s.append(k)
+            ## Saving Number of labels for specific K value
+            nLabels.append(data[col_name].nunique())
+            ## Saving Cost or inertia for specific K value of clustering model
+            costs.append(cost)
+
+    ## shifting indexes to 1 row down
+    data.index += 1
+    data.to_csv('res/unsupervised_label.csv')
+
+    plt.figure("k vs Number of labels")
+    plt.plot(k_s,nLabels, marker = 'x')
+    plt.title("k vs label numbers")
+    plt.xlabel('K')
+    plt.ylabel('Number of labels')
+    plt.savefig(Resource+"/k_vs_Number_of_labels.png")
+
+    plt.figure("k vs Model Cost(sum of distance from centroid)")
+    plt.plot(k_s,costs, marker = 'x')
+    plt.title("k vs Model Cost(sum of distance from centroid)")
+    plt.xlabel('k')
+    plt.ylabel('Model Cost')
+    plt.savefig(Resource+"/k_vs_Model_Cost.png")
+
+    ##d/dk(costs) = slope of Costs reference to K value = Rate of change of Costs reference to change of x
+    def slope_list_curve( X, Y ):
+        ## y = Cost(k)
+        ## m = y2 - y1 / x2 - z1                    => m = Cost2 - Cost1 / k2 - k1
+        x1 = 0
+        y1 = 0
+        M = []
+        for x2,y2 in zip(X,Y):
+            dy = y2 - y1
+            dx = x2 - x1
+            y1 = y2
+            x1 = x2
+            m = dy / dx
+            M.append(m)
+            
+        return M
+
+    M = slope_list_curve(k_s,costs)
+        
+    plt.figure("k vs d/dk(Cost)")
+    plt.plot(k_s,M, marker = 'x')
+    plt.title("k vs d/dk(Cost)")
+    plt.xlabel('dk')
+    plt.ylabel('dCost')
+    plt.savefig(Resource+"/ddk_costs.png")
+
+    print("Finished")
+
+if __name__ == '__main__':
+    main()
+        
+
+        
+        
