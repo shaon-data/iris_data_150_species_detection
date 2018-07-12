@@ -20,7 +20,7 @@ from sklearn.cluster import KMeans
 
 style.use('ggplot')
 
-FILE_NAME = "res/iris_no_label.csv"
+FILE_NAME = "res/iris_complete.csv"
 
 def covarience_matrix(X):
     #standardizing data
@@ -40,23 +40,26 @@ def covarience_matrix(X):
 
 def max_min_bi_corel(X):
     ## Max and Min bivariate co-relation from covarience matrix
+    
     a = covarience_matrix(X)
-    ''' Converting diagonal of covariance matrix from 1 to 0.
-    cov(measureX,measureX) => Variance of  Element vs Element = 1
+    
+    ''' Converting diagonal of covariance matrix from 1  as 0, cov(measureX,measureX) > of  Element vs Element = 1
     which is distributed amoung diagonal.
     That means diagonals denotes fully corelated situation.
     So we don't need the diagonal, converting them to 0 '''
     a[a>=1] = 0
-    #Max corelation
+    
     maxcor = np.argwhere(a.max() == a)[0] # reverse 1
+
     b = covarience_matrix(X)
-    #Min corelation
     mincor = np.argwhere(b.min() == b)[0] # reverse 1
+
     return maxcor,mincor
 
 def main():
     ## loading the data
-    data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ["sepal_width", "sepal_length", "petal_width", "petal_length"] )
+    data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ["sepal_width", "sepal_length", "petal_width", "petal_length","class"] )
+    data=data.drop(['class'],1)
     ## for unique id for labels
     data.reset_index(inplace=True)
     
@@ -70,7 +73,7 @@ def main():
     #def handle_missing_values()
     #data.fillna(0, inplace=True)
     #data = data.apply(lambda x: x.fillna(x.mean()),axis=0)
-    data = data.apply(lambda x: x.fillna(x.median()),axis=0 )
+    data = data.apply(lambda x: x.fillna(0),axis=0)
 
     #data = shuffle(data)
 
@@ -83,7 +86,7 @@ def main():
     maxcor,mincor = max_min_bi_corel(x)
     print("Most Colinearity %s"%maxcor)
     print("Least Colinearity %s"%mincor)
-
+    print(covarience_matrix(x))
     
     k_=[]
     t_=[]
@@ -109,20 +112,23 @@ def main():
             fig = plt.figure()
             ax = fig.add_subplot(111, projection='3d')
             
-            '''
+            
             ## 5D
             ax.scatter(x['sepal_width'][predictedY == 0],x['petal_length'][predictedY == 0], x['petal_width'][predictedY == 0],  c=x['sepal_length'][predictedY == 0],cmap=plt.hot(), label='A', marker=(5, 0, 45)) #colormap
             ax.scatter(x['sepal_width'][predictedY == 1],x['petal_length'][predictedY == 1], x['petal_width'][predictedY == 1],  c=x['sepal_length'][predictedY == 1],cmap=plt.hot(), label='B', marker=(5, 2, 45)) #colormap
             ax.scatter(x['sepal_width'][predictedY == 2],x['petal_length'][predictedY == 2], x['petal_width'][predictedY == 2],  c=x['sepal_length'][predictedY == 2],cmap=plt.hot(), label='C', marker=(5, 1, 45)) #colormap
-            ax.scatter(0,0,label='Color Hitmap',c='w')
-            '''
+            ax.scatter(0,0,label='Sepal_widthColor Hitmap',c='w')
             
+            '''
             ## 4D
             ax.scatter(x['sepal_width'][predictedY == 0],x['petal_length'][predictedY == 0], x['petal_width'][predictedY == 0],  c='y', marker=(5, 0, 45)) #colormap
-            ax.scatter(x['sepal_width'][predictedY == 1],x['petal_length'][predictedY == 1], x['petal_width'][predictedY == 1],  c='g', marker=(5, 2, 45)) #colormap
-            ax.scatter(x['sepal_width'][predictedY == 2],x['petal_length'][predictedY == 2], x['petal_width'][predictedY == 2],  c='r', marker=(5, 1, 45)) #colormap            
+            ax.scatter(x['sepal_width'][predictedY == 1],x['petal_length'][predictedY == 1], x['petal_width'][predictedY == 1],  c='g', marker=(5, 1, 45)) #colormap
+            ax.scatter(x['sepal_width'][predictedY == 2],x['petal_length'][predictedY == 2], x['petal_width'][predictedY == 2],  c='r', marker=(5, 2, 45)) #colormap
+            ax.scatter(x['sepal_width'][predictedY == 2],x['petal_length'][predictedY == 2], x['petal_width'][predictedY == 2],  c='black', marker=(5, 2, 45)) #colormap
+            ax.scatter(x['sepal_width'][predictedY == 2],x['petal_length'][predictedY == 2], x['petal_width'][predictedY == 2],  c='pink', marker=(5, 2, 45)) #colormap
+            '''
             
-            ax.set_xlabel('XSepal W')
+            ax.set_xlabel('XSepal L')
             ax.set_ylabel('YPetal L')
             ax.set_zlabel('ZPetal W')
             ax.legend()

@@ -99,6 +99,11 @@ def standard_error(y,y_estimate):
     y_estimated = np.array(y_estimated)
     return ( sum( (y_estimated - y)**2 ) / (n - 2) )**(1/2)
 
+def squared_error(y,y_estimate):
+    y = np.array(y)
+    y_estimated = np.array(y_estimated)
+    return sum( (y - y_estimated)**2 ) 
+
 def standard_deviation_residuals(y,y_estimated):
     ## Standard deviation of residuals or Root mean sqaure error
     ## Lower the number is, the better the fit of the model
@@ -110,13 +115,19 @@ def standard_deviation_residuals(y,y_estimated):
 def bivariate_regression_line_coefficients(x,y):
     x_mean = meann(x)
     y_mean = meann(y)
+    n = len(x)
     x, y = np.array(x), np.array(y)
+    b1 = ( n*(sum(x*y)) - sum(x)*sum(y) ) / ( n*(sum(x**2)) - (sum(x))**2 )
+    print(b1)
     b1 = ( sum( (x - x_mean) * (y - y_mean) ) ) / (sum( (x - x_mean)**2 ))
-    '''
-    n = len(y)
+    print(b1)
     b1 = ( sum( y*x ) - ( ( sum( y ) * sum( x ) ) / n ) ) / ( sum(  (x - x_mean)**2  ) )
-    '''    
+    print(b1)
     b0 = y_mean - b1*x_mean
+    print(b0)
+    b0 = ( sum(y)*sum(x**2) - sum(x)*sum(x*y) ) / ( n*sum(x**2) - (sum(x))**2 )
+    print(b0)
+    
     ## y_estimated = b0 + b1*x
     return b0,b1
     
@@ -138,10 +149,90 @@ def handling_missing_data(data):
     ## Check the second parameter probability distribution, you will have the missing data should be 0/mean/median or max
     ## Not sure but practice the procedure.
 
-## outliers in data make range uselsess
-x=[6,3,8,5,3]
 
-print(variance(x))
+## Determining best equation for linear regression
+## outliers in data make range uselsess
+x = [43,21,25,42,57,59,247]
+y = [99,65,79,75,87,81,486]
+
+x_mean = meann(x)
+y_mean = meann(y)
+n = len(x)
+x, y = np.array(x), np.array(y)
+
+b1eq_ = ["b1 = ( sum( (x - x_mean) * (y - y_mean) ) ) / (sum( (x - x_mean)**2 ))","b1 = ( n*(sum(x*y)) - sum(x)*sum(y) ) / ( n*(sum(x**2)) - (sum(x))**2 )","b1 = ( sum( y*x ) - ( ( sum( y ) * sum( x ) ) / n ) ) / ( sum(  (x - x_mean)**2  ) )"]
+b0eq_ = ["b0 = ( sum(y)*sum(x**2) - sum(x)*sum(x*y) ) / ( n*sum(x**2) - (sum(x))**2 )","b0 = y_mean - b1*x_mean"]
+
+
+b0_,b1_ = [],[]
+b1 = ( sum( (x - x_mean) * (y - y_mean) ) ) / (sum( (x - x_mean)**2 )) #least0
+b1_.append(b1)
+b1 = ( n*(sum(x*y)) - sum(x)*sum(y) ) / ( n*(sum(x**2)) - (sum(x))**2 )
+b1_.append(b1)
+b1 = ( sum( y*x ) - ( ( sum( y ) * sum( x ) ) / n ) ) / ( sum(  (x - x_mean)**2  ) )
+b1_.append(b1)    
+
+print("Eq for b1=%s"%b1eq_)
+print("b1=%s"%b1_)
+
+b0 = ( sum(y)*sum(x**2) - sum(x)*sum(x*y) ) / ( n*sum(x**2) - (sum(x))**2 )
+b0_.append(b0)
+b0 = y_mean - b1*x_mean #least0
+b0_.append(b0)
+print("Eq for b0=%s"%b0eq_)
+print("b0 = %s"%b0_)
+
+y_estimated_ = []
+
+
+class ValueKeeper(object):
+    def __init__(self, value): self.value = value
+    def __str__(self): return str(self.value)
+
+class A(ValueKeeper):
+    def __pos__(self):
+        ## print('called A.__pos__')
+        self.value += 1
+        return self.value
+    def __neg__(self):
+        ## print('called A.__pos__')
+        self.value -= 1
+        return self.value
+
+str_ = []
+c=1
+for b1i in b1_:
+    for b0i in b0_:
+        y_estimated_.append( b0i + b1i*x )
+        ## print("#%s eq, y = %s + %s*x"%(c, b0i , b1i))
+        str_.append("#%s eq, y = %s + %s*x"%(c, b0i , b1i))
+        c+=1
+
+y_eqs_ = []
+for b1eq in b1eq_:
+    for b0eq in b0eq_:
+        y_eqs_.append( (b0eq, b1eq) )
+
+## r_squared(y,y_estimated)
+'''
+c=1
+for y_estimated in y_estimated_:    
+    print("#%s eq least square = %s"%(c,least_square(y,y_estimated)))
+    c+=1
+'''
+'''
+c=A(0)
+[print("#%s eq least square = %s"%(+c,least_square(y,y_estimated))) for y_estimated in y_estimated_]
+'''
+
+[print(c,l,'R Squared = ',r,s,'\n Equations = ',eq) for l,r,c,s,eq in sorted(zip( [least_square(y,y_estimated) for y_estimated in y_estimated_],[r_squared(y,y_estimated) for y_estimated in y_estimated_],['#'+str(c)+' Least Square=' for c in range(1,6+1)],str_,y_eqs_))]
+    
+    
+
+
+
+
+
 
 
 

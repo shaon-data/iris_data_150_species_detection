@@ -1,1 +1,2 @@
 Queries for sloving Issues 	
+how R^2 describe best fit 
