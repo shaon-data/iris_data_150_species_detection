@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Title: Iris Dataset exploration using Linear Regressio
+Title: Iris Dataset exploration using Linear Regression
 """
 import numpy as np
 import pandas as pd
@@ -25,24 +25,33 @@ FILE_NAME = "res/iris_no_label.csv"
 def covarience_matrix(X):
     #standardizing data
     X_std = StandardScaler().fit_transform(X)
-
     #sample means of feature columns' of dataset
-    mean_vec = np.mean(X_std, axis=0) 
+    mean_vec = np.mean(X_std, axis=0)
     #covariance matrix
+    ##[ (distance of data points from their mean)^T . (distance of data points from their mean) ] / ( n - 1 )
     cov_mat = (X_std - mean_vec).T.dot((X_std - mean_vec)) / (X_std.shape[0]-1)
-    #if right handside is ( Xstd - mean(Xstd) )^T . ( Xstd - mean(Xstd) )
-    #simplyfying X^T.X / ( n - 1 )
-    cov_mat = np.cov(X_std.T)
+    ## Equivalent code from numpy: cov_mat = np.cov(X_std.T)
+    
+    ## if size of dataset = n x m = number of samples[row] x Measurements[column]
+    ## m = number of mesurements
+    ## m x m will be the number of cc-relation elemnt returned as 2D matrix, as it is 2 or bivariate
+    ## max number is more corelated or less number is less corelated
     return cov_mat
 
 def max_min_bi_corel(X):
+    ## Max and Min bivariate co-relation from covarience matrix
     a = covarience_matrix(X)
+    ''' Converting diagonal of covariance matrix from 1 to 0.
+    cov(measureX,measureX) => Variance of  Element vs Element = 1
+    which is distributed amoung diagonal.
+    That means diagonals denotes fully corelated situation.
+    So we don't need the diagonal, converting them to 0 '''
     a[a>=1] = 0
+    #Max corelation
     maxcor = np.argwhere(a.max() == a)[0] # reverse 1
-
     b = covarience_matrix(X)
+    #Min corelation
     mincor = np.argwhere(b.min() == b)[0] # reverse 1
-
     return maxcor,mincor
 
 def main():
@@ -68,8 +77,8 @@ def main():
     x = data
     reference_data = data.copy()
 
-    print("Covariance Matrix =")
-    print(covarience_matrix(x))
+    #print("Covariance Matrix =")
+    #print(covarience_matrix(x))
 
     maxcor,mincor = max_min_bi_corel(x)
     print("Most Colinearity %s"%maxcor)
@@ -86,36 +95,37 @@ def main():
             clu = KMeans(n_clusters=k,random_state =1)
             clu.fit(x)
             predictedY = clu.labels_
-            print("k=%s , center = "%k)
-
+            
             # Sum of distances of samples to their closest cluster center
             interia = clu.inertia_
             k_inertia.append((interia)**(1/2))
             
-            print(clu.cluster_centers_)
+            ## EDA for corelation , covariance matrix show max value when most co-related, you can check the same from catter matrix
             bata = data[['sepal_width','petal_length','petal_width']]
-            scatter_matrix(data, alpha=0.2, figsize=(6, 6), diagonal='kde')
+            scatter_matrix(data, alpha=0.2, figsize=(6, 6), diagonal='kde') 
+
+
             # Plot the classifications according to the model
             fig = plt.figure()
             ax = fig.add_subplot(111, projection='3d')
             
-            
-            
+            '''
+            ## 5D
             ax.scatter(x['sepal_width'][predictedY == 0],x['petal_length'][predictedY == 0], x['petal_width'][predictedY == 0],  c=x['sepal_length'][predictedY == 0],cmap=plt.hot(), label='A', marker=(5, 0, 45)) #colormap
             ax.scatter(x['sepal_width'][predictedY == 1],x['petal_length'][predictedY == 1], x['petal_width'][predictedY == 1],  c=x['sepal_length'][predictedY == 1],cmap=plt.hot(), label='B', marker=(5, 2, 45)) #colormap
             ax.scatter(x['sepal_width'][predictedY == 2],x['petal_length'][predictedY == 2], x['petal_width'][predictedY == 2],  c=x['sepal_length'][predictedY == 2],cmap=plt.hot(), label='C', marker=(5, 1, 45)) #colormap
             ax.scatter(0,0,label='Color Hitmap',c='w')
+            '''
             
-            ax.set_xlabel('X axis')
-            ax.set_ylabel('Y axis')
-            ax.set_zlabel('Z axis')
-            ax.legend()
-
-            '''
+            ## 4D
             ax.scatter(x['sepal_width'][predictedY == 0],x['petal_length'][predictedY == 0], x['petal_width'][predictedY == 0],  c='y', marker=(5, 0, 45)) #colormap
-            ax.scatter(x['sepal_width'][predictedY == 1],x['petal_length'][predictedY == 1], x['petal_width'][predictedY == 1],  c='g',cmap=plt.hot(), marker=(5, 2, 45)) #colormap
-            ax.scatter(x['sepal_width'][predictedY == 2],x['petal_length'][predictedY == 2], x['petal_width'][predictedY == 2],  c='r',cmap=plt.hot(), marker=(5, 1, 45)) #colormap
-            '''
+            ax.scatter(x['sepal_width'][predictedY == 1],x['petal_length'][predictedY == 1], x['petal_width'][predictedY == 1],  c='g', marker=(5, 2, 45)) #colormap
+            ax.scatter(x['sepal_width'][predictedY == 2],x['petal_length'][predictedY == 2], x['petal_width'][predictedY == 2],  c='r', marker=(5, 1, 45)) #colormap            
+            
+            ax.set_xlabel('XSepal W')
+            ax.set_ylabel('YPetal L')
+            ax.set_zlabel('ZPetal W')
+            ax.legend()
 
             ## taking n-dimensional centroid and plotting centroid
             c0=[]
