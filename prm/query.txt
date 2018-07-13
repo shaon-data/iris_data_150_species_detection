@@ -1,2 +1,3 @@
 Queries for sloving Issues 	
 how R^2 describe best fit 
+how to show no label on axis subplot matplotlib 

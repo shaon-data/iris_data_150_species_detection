@@ -26,19 +26,40 @@ def least_square(y,y_estimated):
     ## [0, infinity )
     return sum(d*d)
 
-def r_squared(y,y_estimated,c=0):
+def r_squared(y,y_estimated):
+    SEy_estimated = squared_error(y,y_estimated)
+    SEy_mean = squared_error(y,meann(y)) 
+    return 1 - (SEy_estimated/SEy_mean)
+    ## coefficient of determination  or R^2, better than least square
+
+def r_squared2(y,y_estimated,c=0):
     ## y_estimated or y hat
     y = np.array(y)
     y_estimated = np.array(y_estimated)
     y_mean = meann(y)
-    Distance_between_estimated_line_N_Mean = y_estimated - y_mean
-    Distance_between_actual_line_N_Mean = y - y_mean
+    Distance_between_estimated_line_N_Mean = y_estimated - y_mean ## = > This one is
+    Distance_between_actual_point_N_Mean = y - y_mean # same
     ## both distance are squared , because sum of (actual line - mean) = 0 and we need distance so we have to avoid '-' numbers
     if c == 1:
         print("R = 0 no colinearity and R = 1 is exact feet, R = [0,1]\n we can say R sqaured , describes how well regression line, predicts actual values")
-    rsquared = sum( (Distance_between_estimated_line_N_Mean)**2 ) / sum( ( y - y_mean )**2 )
+    rsquared = sum( Distance_between_estimated_line_N_Mean**2 ) / sum( Distance_between_actual_point_N_Mean**2 )
+    ## between few lines y_estimated - y_mean
     return rsquared
+
     
+
+def standard_error(y,y_estimate):
+    n = len(y)
+    y = np.array(y)
+    y_estimated = np.array(y_estimated)
+    return ( sum( (y_estimated - y)**2 ) / (n - 2) )**(1/2)
+
+def squared_error(y,y_estimated):
+    y = np.array(y)
+    y_estimated = np.array(y_estimated)
+    return sum( (y - y_estimated)**2 )
+    ## squared_error
+
 def standard_deviation(x):
     ## S - Average distance from the mean
     return (variance(x))**(1/2)
@@ -93,16 +114,6 @@ def max_min_bi_corel(X):
 
     return maxcor,mincor
 
-def standard_error(y,y_estimate):
-    n = len(y)
-    y = np.array(y)
-    y_estimated = np.array(y_estimated)
-    return ( sum( (y_estimated - y)**2 ) / (n - 2) )**(1/2)
-
-def squared_error(y,y_estimate):
-    y = np.array(y)
-    y_estimated = np.array(y_estimated)
-    return sum( (y - y_estimated)**2 ) 
 
 def standard_deviation_residuals(y,y_estimated):
     ## Standard deviation of residuals or Root mean sqaure error
@@ -226,7 +237,14 @@ c=A(0)
 '''
 
 [print(c,l,'R Squared = ',r,s,'\n Equations = ',eq) for l,r,c,s,eq in sorted(zip( [least_square(y,y_estimated) for y_estimated in y_estimated_],[r_squared(y,y_estimated) for y_estimated in y_estimated_],['#'+str(c)+' Least Square=' for c in range(1,6+1)],str_,y_eqs_))]
+
+import matplotlib.pyplot as plt
+plt.scatter(x,y)
+plt.plot(x,(3.6895964091445137 + 1.9153296055384377*x ))
+
     
+
+plt.show()
     
 
 

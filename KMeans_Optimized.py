@@ -21,6 +21,22 @@ FILE_NAME = Resource+"/iris_no_label.csv"
 style.use('ggplot')
 
 ## Functions
+class ValueKeeper(object):
+    def __init__(self, value): self.value = value
+    def __str__(self): return str(self.value)
+
+class A(ValueKeeper):
+    def __pos__(self):
+        ## print('called A.__pos__')
+        self.value += 1
+        return self.value
+    def __neg__(self):
+        ## print('called A.__pos__')
+        self.value -= 1
+        return self.value
+    def __mul__(self,a):
+        return self.value*a
+
 def covarience_matrix(X):
     #standardizing data
     X_std = StandardScaler().fit_transform(X)
@@ -86,6 +102,57 @@ def main():
     k_s = []
     costs = []
     nLabels = []
+
+
+    sample_number,measurement_number = data.shape
+
+    ''''
+    plt.figure("Scatter Matrix",figsize = (measurement_number,measurement_number))
+    for n in range(1,measurement_number*measurement_number+1):
+        ax = plt.subplot(measurement_number,measurement_number,n)
+        ax.scatter(1,1)
+        ax.axes.get_xaxis().set_visible(False)
+        ax.axes.get_yaxis().set_visible(False)
+        
+        #plt.tight_layout()
+    plt.subplots_adjust(wspace=0, hspace=0)
+    plt.show()
+    '''
+
+    n=A(0)
+    c = A(0)
+    plt.figure("Scatter Matrix",figsize = (measurement_number,measurement_number))
+    for xI in data.columns:
+        for yI in data.columns:
+            #print(xI,yI
+            if( (c*4 - 3) == n ):
+                ax = plt.subplot(measurement_number,measurement_number,+n)
+                ax.scatter(data[xI],data[yI])
+                ax.set_xlabel(xI)
+                ax.set_ylabel(yI)
+                +c
+            else:
+                ax = plt.subplot(measurement_number,measurement_number,+n)
+                ax.scatter(data[xI],data[yI])
+                
+                
+            
+                
+            
+                #ax.axes.get_xaxis().set_visible(False)
+                #ax.axes.get_yaxis().set_visible(False)
+                ax.set_xticklabels([])
+                ax.set_yticklabels([])
+                c
+        
+
+
+    plt.subplots_adjust(wspace=0.02, hspace=0.02)
+    #plt.tight_layout()
+    plt.show()
+
+    
+    # plt.subplot(441, facecolor='y')
     
     for k in range(2,15): ## experiment with n
         if True: ## Dont use Odd logic - if it is not continuous, we will not able to produce the real result
