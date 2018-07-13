@@ -58,7 +58,7 @@ def max_min_bi_corel(X):
 
 def main():
     ## loading the data
-    data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ["sepal_width", "sepal_length", "petal_width", "petal_length","class"] )
+    data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ["sepal_length", "sepal_width", "petal_length", "petal_width", "class"] )
     data=data.drop(['class'],1)
     ## for unique id for labels
     data.reset_index(inplace=True)

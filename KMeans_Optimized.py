@@ -2,7 +2,7 @@
 """
 Title: Getting Groups of species from unlabelled Iris Dataset
 """
-
+import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,74 +11,23 @@ from sklearn.preprocessing import StandardScaler
 from sklearn import preprocessing, cross_validation
 from sklearn.cluster import KMeans
 
+from EDA import *
+
 
 
 ## Constants
 Resource = "res"
+Result_Folder = "result"
 FILE_NAME = Resource+"/iris_no_label.csv"
+
+try:  
+    os.mkdir(Result_Folder)
+except OSError:  
+    print ("Result Folder Already exist, overwriting everything.")
 
 ## Settings
 style.use('ggplot')
 
-## Functions
-class ValueKeeper(object):
-    def __init__(self, value): self.value = value
-    def __str__(self): return str(self.value)
-
-class A(ValueKeeper):
-    def __pos__(self):
-        ## print('called A.__pos__')
-        self.value += 1
-        return self.value
-    def __neg__(self):
-        ## print('called A.__pos__')
-        self.value -= 1
-        return self.value
-    def __mul__(self,a):
-        return self.value*a
-
-def covarience_matrix(X):
-    #standardizing data
-    X_std = StandardScaler().fit_transform(X)
-    #sample means of feature columns' of dataset
-    mean_vec = np.mean(X_std, axis=0)
-    #covariance matrix
-    ##[ (distance of data points from their mean)^T . (distance of data points from their mean) ] / ( n - 1 )
-    cov_mat = (X_std - mean_vec).T.dot((X_std - mean_vec)) / (X_std.shape[0]-1)
-    ## Equivalent code from numpy: cov_mat = np.cov(X_std.T)
-    
-    ## if size of dataset = n x m = number of samples[row] x Measurements[column]
-    ## m = number of mesurements
-    ## m x m will be the number of cc-relation elemnt returned as 2D matrix, as it is 2 or bivariate
-    ## max number is more corelated or less number is less corelated
-    return cov_mat
-
-def max_min_bi_corelation(X):
-    ## Max and Min bivariate co-relation from covarience matrix
-    a = covarience_matrix(X)
-    ''' Converting diagonal of covariance matrix from 1 to 0.
-    cov(measureX,measureX) => Variance of  Element vs Element = 1
-    which is distributed amoung diagonal.
-    That means diagonals denotes fully corelated situation.
-    So we don't need the diagonal, converting them to 0 '''
-    a[a>=1] = 0
-    #Max corelation
-    maxcor = np.argwhere(a.max() == a)[0] # reverse 1
-    b = covarience_matrix(X)
-    #Min corelation
-    mincor = np.argwhere(b.min() == b)[0] # reverse 1
-    return maxcor,mincor
-
-def slope_list_curve( X, Y ):
-        ## y = f(x)
-        ## m = y2 - y1 / x2 - z1 = f(x2) - f(x1) / x2 - x1
-        x1,y1 = 0,0
-        M = []
-        for x2,y2 in zip(X,Y):
-            dy,dx = (y2 - y1),(x2 - x1)
-            x1,y1 = x2,y2
-            M.append( dy / dx )
-        return M
     
 def main():
     ## Loading the data
@@ -103,56 +52,7 @@ def main():
     costs = []
     nLabels = []
 
-
-    sample_number,measurement_number = data.shape
-
-    ''''
-    plt.figure("Scatter Matrix",figsize = (measurement_number,measurement_number))
-    for n in range(1,measurement_number*measurement_number+1):
-        ax = plt.subplot(measurement_number,measurement_number,n)
-        ax.scatter(1,1)
-        ax.axes.get_xaxis().set_visible(False)
-        ax.axes.get_yaxis().set_visible(False)
-        
-        #plt.tight_layout()
-    plt.subplots_adjust(wspace=0, hspace=0)
-    plt.show()
-    '''
-
-    n=A(0)
-    c = A(0)
-    plt.figure("Scatter Matrix",figsize = (measurement_number,measurement_number))
-    for xI in data.columns:
-        for yI in data.columns:
-            #print(xI,yI
-            if( (c*4 - 3) == n ):
-                ax = plt.subplot(measurement_number,measurement_number,+n)
-                ax.scatter(data[xI],data[yI])
-                ax.set_xlabel(xI)
-                ax.set_ylabel(yI)
-                +c
-            else:
-                ax = plt.subplot(measurement_number,measurement_number,+n)
-                ax.scatter(data[xI],data[yI])
-                
-                
-            
-                
-            
-                #ax.axes.get_xaxis().set_visible(False)
-                #ax.axes.get_yaxis().set_visible(False)
-                ax.set_xticklabels([])
-                ax.set_yticklabels([])
-                c
-        
-
-
-    plt.subplots_adjust(wspace=0.02, hspace=0.02)
-    #plt.tight_layout()
-    plt.show()
-
-    
-    # plt.subplot(441, facecolor='y')
+    scatter_matrix_graph_fit(data)
     
     for k in range(2,15): ## experiment with n
         if True: ## Dont use Odd logic - if it is not continuous, we will not able to produce the real result
@@ -183,7 +83,7 @@ def main():
     data.index += 1
 
     ## Saving the labeled Result
-    data.to_csv('res/unsupervised_label.csv')
+    data.to_csv(Result_Folder+'/unsupervised_label.csv')
 
     ## Plotting the k vs Number of labels to understand the cluster
     plt.figure("k vs Number of labels")
@@ -191,7 +91,7 @@ def main():
     plt.title("k vs label numbers")
     plt.xlabel('K')
     plt.ylabel('Number of labels')
-    plt.savefig(Resource+"/k_vs_Number_of_labels.png")
+    plt.savefig(Result_Folder+"/k_vs_Number_of_labels.png")
 
     ## Plotting the k vs Model cost
     plt.figure("k vs Model Cost(sum of distance from centroid)")
@@ -199,7 +99,7 @@ def main():
     plt.title("k vs Model Cost(sum of distance from centroid)")
     plt.xlabel('k')
     plt.ylabel('Model Cost')
-    plt.savefig(Resource+"/k_vs_Model_Cost.png")
+    plt.savefig(Result_Folder+"/k_vs_Model_Cost.png")
 
 
 
@@ -212,7 +112,7 @@ def main():
     plt.title("k vs Change_rate(Cost)")
     plt.xlabel('k')
     plt.ylabel('Change in Cost')
-    plt.savefig(Resource+"/ddk_costs.png")
+    plt.savefig(Result_Folder+"/ddk_costs.png")
 
     print(costs)
     plt.figure('HIst cost')
@@ -220,7 +120,7 @@ def main():
     plt.xlabel('I')
     plt.ylabel('Costs')
     plt.title('HIst cost(Density) for Best Cluster Number[ later probability Dist]')
-    plt.savefig(Resource+"/Histogram_costs.png")
+    plt.savefig(Result_Folder+"/Histogram_costs.png")
     
     best_k_index = M.index(min(M))
     best_cluster_number = nLabels[M.index(min(M))]
