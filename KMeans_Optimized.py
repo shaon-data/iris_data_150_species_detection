@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import style
+import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 from sklearn import preprocessing, cross_validation
 from sklearn.cluster import KMeans
@@ -16,7 +17,7 @@ from EDA import *
 
 
 ## Constants
-Resource = "res"
+Resource = "data"
 Result_Folder = "result"
 FILE_NAME = Resource+"/iris_no_label.csv"
 
@@ -27,6 +28,8 @@ except OSError:
 
 ## Settings
 style.use('ggplot')
+
+sns.set()
 
     
 def main():
@@ -79,6 +82,37 @@ def main():
             ## Saving Cost or inertia for specific K value of clustering model
             costs.append(cost)
 
+    k_ticks = ["k"+str(k) for k in k_s]
+    #ind = np.arange(len(range(2,15)))
+
+    print(data.columns)
+
+    def bins_labels(bins, **kwargs):
+        bin_w = (max(bins) - min(bins)) / (len(bins) - 1)
+        print(bin_w)
+        print(np.arange(min(bins)+bin_w/2, max(bins), bin_w))
+        print(min(bins)+bin_w/2, max(bins), bin_w)
+        print(np.arange(0.5,3, 1))
+        plt.xticks(np.arange(0.5,3, 1), bins, **kwargs)
+        #plt.xlim(bins[0], bins[-1])
+
+    labels = data['k3_label'].unique()
+    
+    ## All possibilities with value of K
+    fig = plt.figure("Scatter Matrix",figsize = (5,3))
+    n=1
+    for c in data.ix[:,4:].columns:
+        ax = plt.subplot(5,3,n)
+        labels, counts = np.unique(data[c], return_counts=True)
+        ax.bar(labels, counts, align='center')
+        #ax.gca().set_xticks(labels)
+        ax.set_xlabel("Label")
+        ax.set_ylabel("Label Population")
+        
+        n+=1
+    plt.show()
+
+    
     ## shifting indexes to 1 row down
     data.index += 1
 
@@ -93,42 +127,52 @@ def main():
     plt.ylabel('Number of labels')
     plt.savefig(Result_Folder+"/k_vs_Number_of_labels.png")
 
+
+    ## Plot of  Optimization starts
+    plt.figure("k vs Model Cost and k vs Change rate in Model Cost")
     ## Plotting the k vs Model cost
-    plt.figure("k vs Model Cost(sum of distance from centroid)")
+    #plt.figure("k vs Model Cost(sum of distance from centroid)")
+    plt.subplot(2,1,1)
     plt.plot(k_s,costs, marker = 'x')
-    plt.title("k vs Model Cost(sum of distance from centroid)")
+    plt.title("Title:k vs Model Cost(sum of distance from centroid)")
     plt.xlabel('k')
     plt.ylabel('Model Cost')
-    plt.savefig(Result_Folder+"/k_vs_Model_Cost.png")
-
-
+    #plt.savefig(Result_Folder+"/k_vs_Model_Cost.png")
 
     ##d/dk(costs) = slope of Costs reference to K value = Rate of change of Costs reference to change of x
     M = slope_list_curve(k_s,costs)
 
-    ## Visualizing optimized K value    
-    plt.figure("k vs d/dk(Cost)")
+    ## Visualizing optimized K value
+    plt.subplot(2,1,2)
+    #plt.figure("k vs d/dk(Cost)")
     plt.plot(k_s,M, marker = 'x')
-    plt.title("k vs Change_rate(Cost)")
+    plt.title("Title:k vs Change_rate(Cost)")
     plt.xlabel('k')
     plt.ylabel('Change in Cost')
-    plt.savefig(Result_Folder+"/ddk_costs.png")
-
-    print(costs)
-    plt.figure('HIst cost')
-    plt.hist(costs, bins=100,alpha=0.75,normed=1)
-    plt.xlabel('I')
-    plt.ylabel('Costs')
-    plt.title('HIst cost(Density) for Best Cluster Number[ later probability Dist]')
-    plt.savefig(Result_Folder+"/Histogram_costs.png")
     
+    plt.tight_layout()
+    plt.savefig(Result_Folder+"/cost_ddk_costs.png")
+    ## Plot of  Optimization ends
+    
+
+    ## Optimized Result
     best_k_index = M.index(min(M))
+    best_k = k_s[best_k_index]
     best_cluster_number = nLabels[M.index(min(M))]
-
     
-    print("Best K = %s"%(k_s[best_k_index]))
-    print("Best Label not ok = %s"%(best_cluster_number))
-    print("Finished")
+    
+    
+
+    ax = plt.figure('Best Result')
+    labels, counts = np.unique(data['k'+str(k_s[best_k_index])+'_label'], return_counts=True)
+    plt.title("Best Class Number=%s, when k=%s"%(best_cluster_number,best_k))
+    plt.bar(labels, counts, align='center')
+    plt.gca().set_xticks(labels)
+    plt.xlabel("Label")
+    plt.ylabel("Label Population")
+    plt.savefig(Result_Folder+"/best_result.png")
+    ax.show()
+    
 
 if __name__ == '__main__':
     main()

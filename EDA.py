@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
 
 class ValueKeeper(object):
     def __init__(self, value): self.value = value
@@ -96,6 +98,13 @@ def variance(x):
     ## SSD = Sample Standard deviation = average distance from mean
     S_squared = sum( (xi - x_mean) ** 2 ) / (n - 1)
     return S_squared
+def pearson_r(x,y):
+    x = np.array(x)
+    y = np.array(y)
+    Mx = meann(x)
+    My = meann(y)
+    pearson_r = sum( (x-Mx) * (y - My) ) / ( sum( (x - Mx)**2 ) * sum( (y - My )**2 ) )**(1/2)
+    return pearson_r
 
 def standard_deviation(x):
     ## S - Average distance from the mean
@@ -160,19 +169,27 @@ def slope_list_curve( X, Y ):
         return M
 
 def scatter_matrix_graph_fit(data,s=8):
+    
     measurement_number = data.shape[1]
     n=0
-    plt.figure("Scatter Matrix",figsize = (measurement_number,measurement_number))
+    fig = plt.figure("Scatter Matrix",figsize = (measurement_number,measurement_number))
     plt.axes(frameon=False)
     
+    xS = 1
     for yI in data.columns:
         j=0
+        yS = 1
         for xI in data.columns:
+            yS = 1
             n+=1
             ax = plt.subplot(measurement_number,measurement_number,n)
             ax.scatter(data[xI],data[yI],c='mediumseagreen',s=s)
             y_hat = regression_points(data[xI],data[yI])
             ax.plot(data[xI],y_hat,c='deepskyblue',ls='-.')
+            ax.set_title("r="+str(pearson_r(data[xI],data[yI])),fontsize=10,y=.89)
+
+         
+
             #ax.axes.get_xaxis().set_visible(False)
             #ax.axes.get_yaxis().set_visible(False)
             ax.set_xticklabels([])
@@ -185,8 +202,10 @@ def scatter_matrix_graph_fit(data,s=8):
                 ax.set_xlabel(xI)
             
             j+=1
-        
-    plt.subplots_adjust(wspace=0.02, hspace=0.02)
+            yS+=1
+        xS+=1
+    
+    plt.subplots_adjust(wspace=0.02, hspace=0.08)
     plt.show()
     
     # plt.subplot(441, facecolor='y')
@@ -303,12 +322,15 @@ def good_fit_equation_lr_test():
         
 
     plt.show()
-    
 
+'''
+x = [43,21,25,42,57,59,247]
+y = [99,65,79,75,87,81,486]
+newDF = pd.DataFrame()
+newDF['x'] = x
+newDF['y'] = y
 
-
-
-
-
-
-
+print(pearson_r(x,y))
+print(np.corrcoef(x,y))
+print(covarience_matrix(newDF))
+'''
