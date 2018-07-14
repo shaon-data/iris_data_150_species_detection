@@ -209,6 +209,13 @@ IF "%command%" == "git" (
 	git remote
 	SET /P sofake=Remote Name to delete:
 	git remote rm !sofake!
+	
+	IF "%sofake%" == "%repon%" (
+		echo [initialized] > prm/project.log
+		echo [remotename:] >> prm/project.log
+		echo [remotelink:] >> prm/project.log
+	)
+
 )ELSE IF "%command%" == "update" (
 	SET command=
 

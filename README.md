@@ -1,4 +1,4 @@
-# iris150_data_analysis 
+# iris_data_150_species_detection
 ## Download 
 For downloading use 
        `git clone https://github.com/ShaonMajumder/iris150_data_analysis.git` 
