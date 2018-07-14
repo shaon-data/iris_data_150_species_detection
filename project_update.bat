@@ -51,19 +51,37 @@ echo .....
 echo "update" - for updating project in repository
 echo "git" - for using git
 echo "query" - for using google
+echo .....
+echo "renamerepon" - Renaming Repo Name
+echo "renamerepol" - Renaming Repo Link
+echo "remotedel" - Renaming Repo Link
+
 
 SET /p  command=Give me a Command:
 
 IF "%command%" == "git" (
+
 	SET command=
 
-	echo Retriving project remotename...
+	echo Retriving project information...
 	FOR /F "tokens=1* delims=[]" %%a in (prm/project.log) do (
 		Echo.%%a | findstr /C:"remotename">nul && (
 		
 			set line=%%a
 			set repon=!line:remotename:=!
 			Echo Remotename retrived : !repon!
+	
+		) || (
+		    rem Echo remote name cannot retrive
+		)
+	)
+
+	FOR /F "tokens=1* delims=[]" %%a in (prm/project.log) do (
+		Echo.%%a | findstr /C:"remotelink">nul && (
+		
+			set line=%%a
+			set repon=!line:remotelink:=!
+			Echo Remotelink retrived : !repol!
 	
 		) || (
 		    rem Echo remote name cannot retrive
@@ -109,7 +127,40 @@ IF "%command%" == "git" (
 	endlocal
 	endlocal
 
-)ELSE IF "%command%" == "rename" (
+)ELSE IF "%command%" == "renamerepon" (
+	echo Retriving project information...
+	FOR /F "tokens=1* delims=[]" %%a in (prm/project.log) do (
+		Echo.%%a | findstr /C:"remotename">nul && (
+		
+			set line=%%a
+			set repon=!line:remotename:=!
+			Echo Remotename retrived : !repon!
+	
+		) || (
+		    rem Echo remote name cannot retrive
+		)
+	)
+
+	FOR /F "tokens=1* delims=[]" %%a in (prm/project.log) do (
+		Echo.%%a | findstr /C:"remotelink">nul && (
+		
+			set line=%%a
+			set repol=!line:remotelink:=!
+			Echo Remotelink retrived : !repol!
+	
+		) || (
+		    rem Echo remote name cannot retrive
+		)
+	)
+	echo Previous Repository Name: !repon!
+	echo Previous Repository Link: !repol!
+	SET /P new_repon=New Repository Name:
+	git remote rename !repon! !new_repon!
+	echo [initialized] > prm/project.log
+	echo [remotename:!new_repon!] >> prm/project.log
+	echo [remotelink:!repol!] >> prm/project.log
+
+)ELSE IF "%command%" == "renamerepol" (
 	echo Retriving project remotename...
 	FOR /F "tokens=1* delims=[]" %%a in (prm/project.log) do (
 		Echo.%%a | findstr /C:"remotename">nul && (
@@ -122,9 +173,42 @@ IF "%command%" == "git" (
 		    rem Echo remote name cannot retrive
 		)
 	)
-	echo Previous Repository Name: !repon!
-	SET /P new_repon=New Repository Name:
-	git mv !repon! !new_repon!
+	FOR /F "tokens=1* delims=[]" %%a in (prm/project.log) do (
+		Echo.%%a | findstr /C:"remotelink">nul && (
+		
+			set line=%%a
+			set repon=!line:remotelink:=!
+			Echo Remotelink retrived : !repol!
+	
+		) || (
+		    rem Echo remote name cannot retrive
+		)
+	)
+	echo existing Repository Name: !repon!
+	echo existing repository link: !repol!
+	git remote -v
+	SET /P new_repol=New Repository link:
+	git remote set-url !repon! !new_repol!
+	echo [initialized] > prm/project.log
+	echo [remotename:!new_repon!] >> prm/project.log
+	echo [remotelink:!new_repol!] >> prm/project.log
+)ELSE IF "%command%" == "remotedel" (
+	echo Retriving project remotename...
+	FOR /F "tokens=1* delims=[]" %%a in (prm/project.log) do (
+		Echo.%%a | findstr /C:"remotename">nul && (
+		
+			set line=%%a
+			set repon=!line:remotename:=!
+			Echo Remotename retrived : !repon!
+	
+		) || (
+		    rem Echo remote name cannot retrive
+		)
+	)
+	echo Available Remmote names:
+	git remote
+	SET /P sofake=Remote Name to delete:
+	git remote rm !sofake!
 )ELSE IF "%command%" == "update" (
 	SET command=
 
