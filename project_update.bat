@@ -109,7 +109,23 @@ IF "%command%" == "git" (
 	endlocal
 	endlocal
 
-) ELSE IF "%command%" == "update" (
+)ELSE IF "%command%" == "rename" (
+	echo Retriving project remotename...
+	FOR /F "tokens=1* delims=[]" %%a in (prm/project.log) do (
+		Echo.%%a | findstr /C:"remotename">nul && (
+		
+			set line=%%a
+			set repon=!line:remotename:=!
+			Echo Remotename retrived : !repon!
+	
+		) || (
+		    rem Echo remote name cannot retrive
+		)
+	)
+	echo Previous Repository Name: !repon!
+	SET /P new_repon=New Repository Name:
+	git mv !repon! !new_repon!
+)ELSE IF "%command%" == "update" (
 	SET command=
 
 	echo Retriving project remotename...
