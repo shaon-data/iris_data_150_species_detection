@@ -12,7 +12,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn import preprocessing, cross_validation
 from sklearn.cluster import KMeans
 
-from EDA import *
+import sys
+sys.path.insert(0, "D:\work\codes\Ripositories\Data Science\My_Lib")
+
+from EDA  import *
 
 
 
@@ -35,6 +38,7 @@ sns.set()
 def main():
     ## Loading the data
     data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ['Sepal_Length','Sepal_Width','Petal_Length','Petal_Width'] )
+    
     ## for unique ID for labels in optimization
     data.reset_index(inplace=True) # use this or remove, header = None from previous line
     
@@ -62,6 +66,7 @@ def main():
             ## Initializing model with a fixed random seed
             clusters = KMeans(n_clusters=k, random_state = 1)
             clusters.fit(X)
+            
             ## Getting predicted Labels
             predictedLabelY = clusters.labels_
 
@@ -172,7 +177,12 @@ def main():
     plt.ylabel("Label Population")
     plt.savefig(Result_Folder+"/best_result.png")
     ax.show()
-    
+
+    bata = pd.read_csv(Resource+"/iris_complete.csv", header=None, index_col=0, names = ['Sepal_Length','Sepal_Width','Petal_Length','Petal_Width','Class'] )
+    clf = KMeans(n_clusters=3)
+    clf.fit(X)
+    ## For Kaggle
+    print(clf.score(data,bata['Class']))
 
 if __name__ == '__main__':
     main()
