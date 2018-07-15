@@ -13,7 +13,7 @@ from sklearn import preprocessing, cross_validation
 from sklearn.cluster import KMeans
 
 import sys
-sys.path.insert(0, "D:\work\codes\Ripositories\Data Science\My_Lib")
+sys.path.insert(0, "D:\work\codes\Ripositories\Data Science\My_Lib\EDA")
 
 from EDA  import *
 
