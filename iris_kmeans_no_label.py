@@ -109,7 +109,7 @@ def main():
 
 
             # Plot the classifications according to the model
-            fig = plt.figure()
+            fig = plt.figure( projection='3d'))
             ax = fig.add_subplot(111, projection='3d')
             
             

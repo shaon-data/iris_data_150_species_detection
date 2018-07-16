@@ -14,7 +14,6 @@ from sklearn.cluster import KMeans
 
 import sys
 sys.path.insert(0, "D:\work\codes\Ripositories\Data Science\My_Lib\EDA")
-
 from EDA  import *
 
 
@@ -132,7 +131,30 @@ def main():
     plt.ylabel('Number of labels')
     plt.savefig(Result_Folder+"/k_vs_Number_of_labels.png")
 
+    plt.figure("Label vs Model Cost and Label vs Change rate in Model Cost")
+    ## Plotting the k vs Model cost
+    #plt.figure("k vs Model Cost(sum of distance from centroid)")
+    plt.subplot(2,1,1)
+    plt.plot(nLabels,costs, marker = 'x')
+    plt.title("Title:Label vs Model Cost(sum of distance from centroid)")
+    plt.xlabel('Numberof labels')
+    plt.ylabel('Model Cost')
+    
 
+    M = slope_list_curve(nLabels,costs)
+
+    
+    ## Visualizing optimized K value
+    plt.subplot(2,1,2)
+    #plt.figure("k vs d/dk(Cost)")
+    plt.plot(nLabels,M, marker = 'x')
+    plt.title("Title:Label vs Change_rate(Cost)")
+    plt.xlabel('k')
+    plt.ylabel('Change in Cost')
+    
+    plt.tight_layout()
+    plt.savefig(Result_Folder+"/labelcost_ddk_costs.png")
+    
     ## Plot of  Optimization starts
     plt.figure("k vs Model Cost and k vs Change rate in Model Cost")
     ## Plotting the k vs Model cost
@@ -156,7 +178,7 @@ def main():
     plt.ylabel('Change in Cost')
     
     plt.tight_layout()
-    plt.savefig(Result_Folder+"/cost_ddk_costs.png")
+    plt.savefig(Result_Folder+"/kcost_ddk_costs.png")
     ## Plot of  Optimization ends
     
 
