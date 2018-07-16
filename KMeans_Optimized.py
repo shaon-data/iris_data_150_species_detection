@@ -33,6 +33,8 @@ style.use('ggplot')
 
 sns.set()
 
+def eda(data):
+    coefficent_of_skewness(data)
     
 def main():
     ## Loading the data
@@ -43,7 +45,8 @@ def main():
     
     ## Filling missing data with medians
     data = data.apply(lambda x: x.fillna(x.median()), axis=0 )
-    
+
+    eda(data)
 
     ## Measures without no label
     X=data
