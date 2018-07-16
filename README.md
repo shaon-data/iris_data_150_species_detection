@@ -61,3 +61,4 @@ In Depth explanation on each step reffering why steps and model had been taken i
 Challenge Credit: Sabbir vai
 Go self exploratory
 Status: Label can be determined well but not the K or cluster numbers
+K vs Label numbers is the best measure to find the best K , learned from soyabin dataset
