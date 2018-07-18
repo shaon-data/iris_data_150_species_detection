@@ -45,8 +45,8 @@ def main():
     data = data.apply(lambda x: x.fillna(x.median()), axis=0 )
 
     ## print(covarience_matrix(data))
-    print(covarience_mat(data))
-    print(corelation_matrix(data))
+    ## print(covarience_mat(data))
+    ## print(corelation_matrix(data))
     ## print(np.cov(data))
     
     ##    print((np.cov(data.ix[:,:0])).shape) 150 x 150
@@ -54,7 +54,7 @@ def main():
     ##    print((np.cov(data.ix[:,:2])).shape) 150 x 150
     ##    print((np.cov(data.ix[:,:3])).shape) 150 x 150
     ##    print((np.cov(data.ix[:,0],data.ix[:,1])).shape) 2 x 2
-
+    
     
     
     eda(data)
