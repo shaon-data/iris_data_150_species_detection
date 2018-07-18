@@ -20,7 +20,7 @@ from sklearn.cluster import KMeans
 
 style.use('ggplot')
 
-FILE_NAME = "res/iris_complete.csv"
+FILE_NAME = "data/iris_complete.csv"
 
 def covarience_matrix(X):
     #standardizing data
@@ -58,10 +58,30 @@ def max_min_bi_corel(X):
 
 def main():
     ## loading the data
+    names = ["sepal_length", "sepal_width", "petal_length", "petal_width", "class"]
     data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ["sepal_length", "sepal_width", "petal_length", "petal_width", "class"] )
-    data=data.drop(['class'],1)
     ## for unique id for labels
     data.reset_index(inplace=True)
+
+    scatter_matrix(data)
+    plt.show()
+    
+    correlations = data.corr()
+    # plot correlation matrix
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    cax = ax.matshow(correlations, vmin=-1, vmax=1)
+    fig.colorbar(cax)
+    ticks = np.arange(0,len(data.columns),1)
+    ax.set_xticks(ticks)
+    ax.set_yticks(ticks)
+    ax.set_xticklabels(data.columns)
+    ax.set_yticklabels(data.columns)
+    plt.show()
+    
+    
+    data=data.drop(['class'],1)
+    
     
 
     # Create an array of three colours, one for each species.
@@ -87,6 +107,8 @@ def main():
     print("Most Colinearity %s"%maxcor)
     print("Least Colinearity %s"%mincor)
     print(covarience_matrix(x))
+
+    
     
     k_=[]
     t_=[]
@@ -109,7 +131,7 @@ def main():
 
 
             # Plot the classifications according to the model
-            fig = plt.figure( projection='3d'))
+            fig = plt.figure( projection='3d')
             ax = fig.add_subplot(111, projection='3d')
             
             
@@ -235,7 +257,7 @@ def main():
     '''
     ## start indexing from 1
     data.index += 1 
-    data.to_csv('res/unsupervised_label.csv')
+    data.to_csv('data/unsupervised_label.csv')
     #[for c in data.columns[:4]]
 
     data_labels = data.copy()

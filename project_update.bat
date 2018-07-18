@@ -49,6 +49,7 @@ IF "%init%" == "1" (
 
 echo .....
 echo "update" - for updating project in repository
+echo "pull" - for updating project in repository
 echo "git" - for using git
 echo "query" - for using google
 echo .....
@@ -215,6 +216,26 @@ IF "%command%" == "git" (
 		echo [remotename:] >> prm/project.log
 		echo [remotelink:] >> prm/project.log
 	)
+
+) ELSE IF "%command%" == "pull" (
+	SET command=
+
+	echo Retriving project remotename...
+	FOR /F "tokens=1* delims=[]" %%a in (prm/project.log) do (
+		Echo.%%a | findstr /C:"remotename">nul && (
+		
+			set line=%%a
+			set repon=!line:remotename:=!
+			Echo Remotename retrived : !repon!
+	
+		) || (
+		    rem Echo remote name cannot retrive
+		)
+	)
+
+	echo Pulling...
+	git pull !repon! master	
+
 
 )ELSE IF "%command%" == "update" (
 	SET command=

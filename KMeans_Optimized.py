@@ -33,9 +33,7 @@ style.use('ggplot')
 
 sns.set()
 
-def eda(data):
-    coefficent_of_skewness(data)
-    
+
 def main():
     ## Loading the data
     data = pd.read_csv(FILE_NAME, header=None, index_col=0, names = ['Sepal_Length','Sepal_Width','Petal_Length','Petal_Width'] )
@@ -46,6 +44,19 @@ def main():
     ## Filling missing data with medians
     data = data.apply(lambda x: x.fillna(x.median()), axis=0 )
 
+    ## print(covarience_matrix(data))
+    print(covarience_mat(data))
+    print(corelation_matrix(data))
+    ## print(np.cov(data))
+    
+    ##    print((np.cov(data.ix[:,:0])).shape) 150 x 150
+    ##    print((np.cov(data.ix[:,:1])).shape) 150 x 150
+    ##    print((np.cov(data.ix[:,:2])).shape) 150 x 150
+    ##    print((np.cov(data.ix[:,:3])).shape) 150 x 150
+    ##    print((np.cov(data.ix[:,0],data.ix[:,1])).shape) 2 x 2
+
+    
+    
     eda(data)
 
     ## Measures without no label
@@ -106,7 +117,7 @@ def main():
     labels = data['k3_label'].unique()
     
     ## All possibilities with value of K
-    fig = plt.figure("Scatter Matrix",figsize = (5,3))
+    fig = plt.figure("All possibilities with value of K",figsize = (5,3))
     n=1
     for c in data.ix[:,4:].columns:
         ax = plt.subplot(5,3,n)
